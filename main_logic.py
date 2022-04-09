@@ -50,14 +50,14 @@ async def cmd_start(message: types.Message, state: FSMContext):
     Conversation's entry point
     """
     # Set state
-
+    print(message.chat.id)
     try:
         user = await database.fetch_one(query='SELECT * '
                                               'FROM teachers '
                                               'WHERE telegram_id = :t_id ',
                                         values={'t_id': message.chat.id})
-
         d = [k for k in user.values()]
+        print('1', d)
         async with state.proxy() as data:
             data['teachers_id'] = d[0]
             data['name'] = d[3]
@@ -70,6 +70,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
                                                   'WHERE telegram_id = :t_id ',
                                             values={'t_id': message.chat.id})
             d = [k for k in user.values()]
+            print('2', d)
             async with state.proxy() as data:
                 data['student_id'] = d[0]
                 data['name'] = d[3]
