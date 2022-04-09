@@ -74,7 +74,7 @@ async def process_password(message: types.Message, state: FSMContext):
     # #
     # if data['password']==user['password']:
     #     await Work_Form.select_student.set()
-    #     await message.reply(f"Добро пожаловать, {user['name']}. Оцените учеников?")
+    #     await message.reply(f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.")
     # else:
     #     user = await database.fetch_one('SELECT * '
     #                                     'FROM students '
@@ -85,4 +85,14 @@ async def process_password(message: types.Message, state: FSMContext):
     #         await Work_Form.select_operation.set()
 
     # await Work_Form.next()
-    await message.answer(dict(user.items()))
+    await message.answer(tuple(user.items()))
+
+
+@dp.message_handler(state=Work_Form.select_student)
+async def process_password(message: types.Message, state: FSMContext):
+    level, subject = message.text.split()[2]
+
+    user = await database.fetch_one(query='SELECT * '
+                                          'FROM teacher_has_students INNER JOIN students on students_id=students.id '
+                                          'WHERE teacher_has_students.subject = :subject and students.class=:level',
+                                        values={'subject': subject, 'level' : level})
