@@ -68,6 +68,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
             data['teacher_name'] = d[3]
             data['subject'] = d[4]
             await Work_Form.select_student.set()
+            await message.reply(
+                f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.")
     except:
         try:
             user = await database.fetch_one(query='SELECT * '
@@ -81,6 +83,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
                 data['student_name'] = d[4]
                 data['class'] = d[5]
                 await Work_Form.select_teacher.set()
+                await message.reply(
+                    f"Добро пожаловать, {user['name']}. Оцените что-нибудь? Напишите любое слово, если готовы.")
         except:
             await Work_Form.login_input.set()
             await message.reply("Введите ваш логин.")
@@ -140,7 +144,6 @@ async def process_password(message: types.Message, state: FSMContext):
 '''
 Выбор для учителя
 '''
-
 
 @dp.message_handler(commands='/teacher2student')
 @dp.message_handler(state=Work_Form.select_student)
@@ -236,8 +239,6 @@ async def select_student(message: types.Message, state: FSMContext):
                                        values={'student_id': data['student_id']})
     d = [[k for k in result.values()] for result in results]
     names = [k[7] for k in d]
-    print(names)
-
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add(*names)
     await Work_Form.select_compliment_teacher.set()
