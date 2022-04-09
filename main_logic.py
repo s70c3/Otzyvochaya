@@ -1,4 +1,3 @@
-
 import aiogram.utils.markdown as md
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -10,6 +9,7 @@ from aiogram.utils import executor
 
 from config import dp, bot
 from db import database
+
 
 # States
 class Work_Form(StatesGroup):
@@ -37,6 +37,7 @@ async def cmd_start(message: types.Message):
 
     await message.reply("Введите ваш логин.")
 
+
 @dp.message_handler(state=Work_Form.login_input)
 async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
@@ -52,15 +53,16 @@ async def process_password(message: types.Message, state: FSMContext):
         data['password'] = message.text
 
     user = await database.fetch_one('SELECT * '
-                                        'FROM teachers '
-                                        'WHERE login = :login ',
-                                        values={'login': data['login']})
+                                    'FROM teachers '
+                                    'WHERE login = :login ',
+                                    values={'login': data['login']})
 
-    if data['password']==user['password']:
+    if data['password'] == user['password']:
         await Work_Form.select_student.set()
 
     # await Work_Form.next()
     await message.answer(user)
+
 
 @dp.message_handler(state=Work_Form.select_student)
 async def process_password(message: types.Message, state: FSMContext):
@@ -68,14 +70,11 @@ async def process_password(message: types.Message, state: FSMContext):
         data['password'] = message.text
 
     user = await database.fetch_one(query='SELECT * '
-                                        'FROM teachers '
-                                        'WHERE login = :login ',
-                                        values={'login': data['login']})
-    print(user.items())
-    print(user.values())
-    print(str(user.items()))
-    print([i for i in user])
-    print([i for i in user.values()])
+                                          'FROM teachers '
+                                          'WHERE login = :login ',
+                                    values={'login': data['login']})
+
+    print({k: v for k, v in zip(user.items(), user.values())})
     # #
     # if data['password']==user['password']:
     #     await Work_Form.select_student.set()
@@ -90,7 +89,7 @@ async def process_password(message: types.Message, state: FSMContext):
     #         await Work_Form.select_operation.set()
 
     # await Work_Form.next()
-    await message.answer("АААА")
+    await message.answer("ААААБ")
 
 
 @dp.message_handler(state=Work_Form.select_student)
@@ -98,8 +97,8 @@ async def process_password(message: types.Message, state: FSMContext):
     level, subject = message.text.split()[2]
 
     results = await database.fetch_one(query='SELECT * '
-                                          'FROM teacher_has_students INNER JOIN students on students_id=students.id '
-                                          'WHERE teacher_has_students.subject = :subject and students.class=:level',
-                                        values={'subject': subject, 'level' : level})
+                                             'FROM teacher_has_students INNER JOIN students on students_id=students.id '
+                                             'WHERE teacher_has_students.subject = :subject and students.class=:level',
+                                       values={'subject': subject, 'level': level})
 
     await message.answer([next(result.values()) for result in results])
