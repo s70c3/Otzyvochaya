@@ -114,6 +114,7 @@ async def process_password(message: types.Message, state: FSMContext):
                            f"VALUES (:name, :class, :login, :password)", values={'name': data['name'], 'class': data['class'],
                                                                                  'login': data['login'], 'password': data['password']})
 
+    print(message.chat.id)
     # And send message
     await bot.send_message(
         message.chat.id,
