@@ -1,10 +1,11 @@
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
 from aiogram import Bot
 import os
 
 TOKEN = os.getenv('BOT_TOKEN')
 bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
 HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
