@@ -45,14 +45,15 @@ async def cmd_start(message: types.Message, state: FSMContext):
                                               'FROM teachers '
                                               'WHERE telegram_id = :t_id ',
                                         values={'t_id': message.chat.id})
-        if user.values():
-            d = [k for k in user.values()]
-            async with state.proxy() as data:
-                data['teachers_id'] = d[0]
-                data['name'] = d[3]
-                data['subject'] = d[4]
-                await Work_Form.select_student.set()
-        else:
+
+        d = [k for k in user.values()]
+        async with state.proxy() as data:
+            data['teachers_id'] = d[0]
+            data['name'] = d[3]
+            data['subject'] = d[4]
+            await Work_Form.select_student.set()
+    except:
+        try:
             user = await database.fetch_one(query='SELECT * '
                                                   'FROM students '
                                                   'WHERE telegram_id = :t_id ',
@@ -62,10 +63,10 @@ async def cmd_start(message: types.Message, state: FSMContext):
                 data['student_id'] = d[0]
                 data['name'] = d[3]
                 data['class'] = d[4]
-                Work_Form.select_teacher.set()
-    except:
-        await Work_Form.login_input.set()
-        await message.reply("Введите ваш логин.")
+                await Work_Form.select_teacher.set()
+        except:
+            await Work_Form.login_input.set()
+            await message.reply("Введите ваш логин.")
 
 
 @dp.message_handler(state=Work_Form.login_input)
@@ -119,7 +120,7 @@ async def process_password(message: types.Message, state: FSMContext):
 '''
 Выбор для учителя
 '''
-
+@dp.message_handler(commands='/teacher2student')
 @dp.message_handler(state=Work_Form.select_student)
 async def select_student(message: types.Message, state: FSMContext):
     subject, level  = message.text.split()[:2]
@@ -197,7 +198,7 @@ async def send_feedback(message: types.Message, state: FSMContext):
 '''  
 Оценка учителя для школьника
 '''
-
+@dp.message_handler(commands='/student2teacher')
 @dp.message_handler(state=Work_Form.select_teacher)
 async def select_student(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
