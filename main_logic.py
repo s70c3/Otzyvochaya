@@ -50,8 +50,7 @@ async def process_password(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Work_Form.password_input)
 async def process_password(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data['password'] = message.text
+
 
     user = await database.fetch_one(query='SELECT * '
                                           'FROM teachers '
@@ -59,7 +58,9 @@ async def process_password(message: types.Message, state: FSMContext):
                                     values={'login': data['login']})
     d = [k for k in user.values()]
     password = d[3]
-    data['teachers_id']=d[0]
+    async with state.proxy() as data:
+        data['password'] = message.text
+        data['teachers_id']=d[0]
 
     if data['password']==password:
         await Work_Form.select_student.set()
