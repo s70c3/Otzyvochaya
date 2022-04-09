@@ -56,8 +56,8 @@ async def process_password(message: types.Message, state: FSMContext):
                                           'FROM teachers '
                                           'WHERE login = :login ',
                                     values={'login': data['login']})
-    print([k for k in user.values()])
-    password = "test"
+    d = [k for k in user.values()]
+    password = d[3]
 
     if data['password']==password:
         await Work_Form.select_student.set()
@@ -68,7 +68,6 @@ async def process_password(message: types.Message, state: FSMContext):
                                         'WHERE login = :login ',
                                         values={'login': data['login']})
         d = [k for k in user.values()]
-        print(d)
         password = d[3]
         if data['password']==password:
             await Work_Form.select_operation.set()
@@ -80,7 +79,7 @@ async def process_password(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Work_Form.select_student)
 async def process_password(message: types.Message, state: FSMContext):
-    level, subject = message.text.split()[2]
+    level, subject = message.text.split()[:2]
 
     results = await database.fetch_one(query='SELECT * '
                                              'FROM teacher_has_students INNER JOIN students on students_id=students.id '
