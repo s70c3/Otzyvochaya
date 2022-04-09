@@ -13,15 +13,25 @@ from registration_teacher import *
 from registration_student import *
 from main_logic import *
 
+import asyncio
+import aioschedule
+
+async def scheduler():
+    aioschedule.every().day.at("03:25").do(broadcaster())
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(1)
 
 async def on_startup(dispatcher):
     await database.connect()
+    asyncio.create_task(scheduler())
     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
 
 
 async def on_shutdown(dispatcher):
     await database.disconnect()
     await bot.delete_webhook()
+
 
 
 
