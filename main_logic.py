@@ -71,6 +71,7 @@ async def process_password(message: types.Message, state: FSMContext):
                                         'FROM teachers '
                                         'WHERE login = :login ',
                                         values={'login': data['login']})
+    print(user)
     # #
     # if data['password']==user['password']:
     #     await Work_Form.select_student.set()
