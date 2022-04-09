@@ -15,11 +15,11 @@ import logging
 
 
 # States
-class Form(StatesGroup):
-    name = State()  # Will be represented in storage as 'Form:name'
-    level = State()  # Will be represented in storage as 'Form:subject'
-    login = State()
-    password = State()
+class Form_Student(StatesGroup):
+    name_student = State()  # Will be represented in storage as 'Form:name'
+    level_student = State()  # Will be represented in storage as 'Form:level'
+    login_student = State()
+    password_student = State()
 
 
 @dp.message_handler(commands='register_student')
@@ -28,7 +28,7 @@ async def cmd_start(message: types.Message):
     Conversation's entry point
     """
     # Set state
-    await Form.name.set()
+    await Form_Student.name_student.set()
 
     await message.reply("Как вас зовут? Введите полное ФИО ученика.")
 
@@ -51,7 +51,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply('Cancelled.', reply_markup=types.ReplyKeyboardRemove())
 
 
-@dp.message_handler(state=Form.name)
+@dp.message_handler(state=Form_Student.name_student)
 async def process_name(message: types.Message, state: FSMContext):
     """
     Process user name
@@ -59,7 +59,7 @@ async def process_name(message: types.Message, state: FSMContext):
     print("Got name")
     async with state.proxy() as data:
         data['name'] = message.text
-    await Form.next()
+    await Form_Student.next()
 
     await message.reply("Из какого вы класса? Введите, пожалуйста, только цифру. ")
 
@@ -74,7 +74,7 @@ async def process_name(message: types.Message, state: FSMContext):
 #     return await message.reply("Age gotta be a number.\nHow old are you? (digits only)")
 
 
-@dp.message_handler(lambda message: not message.text.isdigit(), state=Form.level)
+@dp.message_handler(lambda message: not message.text.isdigit(), state=Form_Student.level)
 async def process_class_invalid(message: types.Message):
     """
     In this example gender has to be one of: Male, Female, Other.
@@ -82,16 +82,16 @@ async def process_class_invalid(message: types.Message):
     return await message.reply("Вы ввели класс не цифрой. Введите другой.")
 
 
-@dp.message_handler(state=Form.level)
+@dp.message_handler(state=Form_Student.level_student)
 async def process_subject(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['class'] = int(message.text)
 
-    await Form.next()
+    await Form_Student.next()
     await message.reply("Введите логин.")
 
 
-@dp.message_handler(state=Form.login)
+@dp.message_handler(state=Form_Student.login_student)
 async def process_login(message: types.Message, state: FSMContext):
     """
     Process user name
@@ -99,11 +99,11 @@ async def process_login(message: types.Message, state: FSMContext):
     print("Got name")
     async with state.proxy() as data:
         data['login'] = message.text
-    await Form.next()
+    await Form_Student.next()
     await message.reply("Введите ваш пароль.")
 
 
-@dp.message_handler(state=Form.password)
+@dp.message_handler(state=Form_Student.password_student)
 async def process_password(message: types.Message, state: FSMContext):
     """
     Process user name
