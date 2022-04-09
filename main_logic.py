@@ -118,10 +118,10 @@ async def process_password(message: types.Message, state: FSMContext):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("5", "4",  "3", "2", "1")
-    await Work_Form.select_negative.set()
+    await Work_Form.select_negative_student.set()
     await message.answer("Что хорошего можно сказать о работе на уроке?", reply_markup=markup)
 
-@dp.message_handler(state=Work_Form.select_negative)
+@dp.message_handler(state=Work_Form.select_negative_student)
 async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['compliment'] = message.text
