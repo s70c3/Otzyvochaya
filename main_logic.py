@@ -107,11 +107,11 @@ async def select_student(message: types.Message, state: FSMContext):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add(*names)
-    await Work_Form.select_compliment.set()
+    await Work_Form.select_compliment_student.set()
     await message.answer('Выберите ученика, которого вы хотите оценить?', reply_markup=markup)
 
 
-@dp.message_handler(state=Work_Form.select_compliment)
+@dp.message_handler(state=Work_Form.select_compliment_student)
 async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['student_name'] = message.text
