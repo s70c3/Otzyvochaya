@@ -73,23 +73,27 @@ async def process_password(message: types.Message, state: FSMContext):
                                           'FROM teachers '
                                           'WHERE login = :login ',
                                     values={'login': data['login']})
+    d = [k for k in user.values()]
+    print(d)
+    password = d[3]
 
-    print({k: v for k, v in zip(user.items(), user.values())})
-    # #
-    # if data['password']==user['password']:
-    #     await Work_Form.select_student.set()
-    #     await message.reply(f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.")
-    # else:
-    #     user = await database.fetch_one('SELECT * '
-    #                                     'FROM students '
-    #                                     'WHERE login = :login ',
-    #                                     values={'login': data['login']})
-    #
-    #     if data['password']==user['password']:
-    #         await Work_Form.select_operation.set()
-
-    # await Work_Form.next()
-    await message.answer("ААААБ")
+    if data['password']==password:
+        await Work_Form.select_student.set()
+        await message.reply(f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.")
+    else:
+        user = await database.fetch_one('SELECT * '
+                                        'FROM students '
+                                        'WHERE login = :login ',
+                                        values={'login': data['login']})
+        d = [k for k in user.values()]
+        print(d)
+        password = d[3]
+        if data['password']==password:
+            await Work_Form.select_operation.set()
+            await message.reply(f"Добро пожаловать, {user['name']}. Оцените что-нибудь?")
+        else:
+            await Work_Form.login_input()
+            await message.reply("Пользователь не найден. Введите логин заново")
 
 
 @dp.message_handler(state=Work_Form.select_student)
