@@ -54,10 +54,9 @@ async def process_name(message: types.Message, state: FSMContext):
     """
     Process user name
     """
-    async with state.proxy() as data:
-        data['name'] = message.text
-
     await Form.next()
+    await state.update_data(name=message.text)
+
 
     # Configure ReplyKeyboardMarkup
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
@@ -85,7 +84,6 @@ async def process_gender_invalid(message: types.Message):
     In this example gender has to be one of: Male, Female, Other.
     """
     return await message.reply("Неизвестный предмет. Введите другой.")
-
 
 
 
