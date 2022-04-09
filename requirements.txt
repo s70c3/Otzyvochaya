@@ -1,1 +1,2 @@
 aiogram==2.19
+databases[sqlite]== 0.5.5
