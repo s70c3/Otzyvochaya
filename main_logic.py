@@ -273,7 +273,7 @@ async def process_wish(message: types.Message, state: FSMContext):
         data['negative'] = message.text
 
     markup = types.ReplyKeyboardRemove()
-    await Work_Form.send_for_student.set()
+    await Work_Form.send_for_teacher.set()
     await message.answer("Что вы пожелаете учителю", reply_markup=markup)
 
 
