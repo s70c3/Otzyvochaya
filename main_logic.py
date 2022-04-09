@@ -83,7 +83,7 @@ async def process_password(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Work_Form.select_student)
 async def select_student(message: types.Message, state: FSMContext):
-    level, subject = message.text.split()[:2]
+    subject, level  = message.text.split()[:2]
     async with state.proxy() as data:
         data['name'] = message.text
 
