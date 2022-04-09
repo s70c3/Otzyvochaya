@@ -23,7 +23,8 @@ class Work_Form(StatesGroup):
     select_subject_mark = State()
     select_content_mark = State()
     select_student = State()
-    select_mark = State()
+    select_compliment = State()
+    select_negative = State()
     input_wish_for_student = State()
     send_for_student = State()
 
@@ -50,7 +51,8 @@ async def process_password(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Work_Form.password_input)
 async def process_password(message: types.Message, state: FSMContext):
-
+    async with state.proxy() as data:
+        data['password'] = message.text
 
     user = await database.fetch_one(query='SELECT * '
                                           'FROM teachers '
@@ -59,7 +61,6 @@ async def process_password(message: types.Message, state: FSMContext):
     d = [k for k in user.values()]
     password = d[3]
     async with state.proxy() as data:
-        data['password'] = message.text
         data['teachers_id']=d[0]
 
     if data['password']==password:
@@ -81,12 +82,12 @@ async def process_password(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=Work_Form.select_student)
-async def process_password(message: types.Message, state: FSMContext):
+async def select_student(message: types.Message, state: FSMContext):
     level, subject = message.text.split()[:2]
     async with state.proxy() as data:
         data['name'] = message.text
 
-    results = await database.fetch_one(query='SELECT * '
+    results = await database.fetch_all(query='SELECT * '
                                              'FROM teachers_has_students INNER JOIN students on students_id=students.id '
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
                                        values={'subject': subject, 'level': int(level)})
@@ -95,30 +96,57 @@ async def process_password(message: types.Message, state: FSMContext):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add(d)
-    await Work_Form.select_mark.set()
+    await Work_Form.select_compliment.set()
     await message.answer('Выберите ученика, которого вы хотите оценить?', reply_markup=markup)
 
 
-@dp.message_handler(state=Work_Form.select_mark)
+@dp.message_handler(state=Work_Form.select_compliment)
 async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['student_name'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("5", "4",  "3", "2", "1")
+    await Work_Form.select_negative.set()
+    await message.answer("Что хорошего можно сказать о работе на уроке?", reply_markup=markup)
+
+@dp.message_handler(state=Work_Form.select_negative)
+async def process_password(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['compliment'] = message.text
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("5", "4",  "3", "2", "1")
+    await Work_Form.input_wish_for_student.set()
+    await message.answer("Что плохого можно сказать о работе на уроке?", reply_markup=markup)
+
+
+@dp.message_handler(state=Work_Form.input_wish_for_student)
+async def process_password(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['negative'] = message.text
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("5", "4",  "3", "2", "1")
     await Work_Form.send_for_student.set()
-    await message.answer("Какую оценку вы поставите ему за работу на уроке?", reply_markup=markup)
+    await message.answer("Что вы пожелаете ученику?", reply_markup=markup)
 
 
 @dp.message_handler(state=Work_Form.send_for_student)
 async def process_password(message: types.Message, state: FSMContext):
-
+    async with state.proxy() as data:
+        user = await database.fetch_one('SELECT * '
+                                        'FROM students '
+                                        'WHERE login = :login ',
+                                        values={'login': data['student_name']})
+        data['student_id']=[k for k in user.values()][0]
     wish = message.text
 
-
     await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
-                           f"VALUES (:name, :subject, :login, :password)", values={'name': data['name'], 'subject': data['subject'],
-                                                                                 'login': data['login'], 'password': data['password']})
+                           f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)", values={'teachers_id': data['teachers_id'],
+                                                                                                          'student_id': data['student_id'], 'compliment': data['compliment'],
+                                                                                                          'negative': data['negative'],'wish': data['wish'],
+                                                                                                          })
 
     await Work_Form.send_for_student.set()
     await message.answer("Напишите готово для отправки")
