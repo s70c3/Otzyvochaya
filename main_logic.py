@@ -263,7 +263,7 @@ async def process_negative(message: types.Message, state: FSMContext):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("5", "4", "3", "2", "1")
-    await Work_Form.input_wish_for_student.set()
+    await Work_Form.input_wish_for_teacher.set()
     await message.answer("Что негативного можно сказать учителю?", reply_markup=markup)
 
 
