@@ -30,7 +30,7 @@ async def cmd_start(message: types.Message):
     # Set state
     await Form.name.set()
 
-    await message.reply("Как вас зовут? Введите полное ФИО.")
+    await message.reply("Как вас зовут? Введите полное ФИО ученика.")
 
 
 # You can use state '*' if you need to handle all states
