@@ -67,18 +67,20 @@ async def process_password(message: types.Message, state: FSMContext):
         await Work_Form.select_student.set()
         await message.reply(f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.")
     else:
-        user = await database.fetch_one('SELECT * '
-                                        'FROM students '
-                                        'WHERE login = :login ',
-                                        values={'login': data['login']})
-        d = [k for k in user.values()]
-        password = d[3]
-        if data['password']==password:
-            await Work_Form.select_operation.set()
-            await message.reply(f"Добро пожаловать, {user['name']}. Оцените что-нибудь?")
-        else:
-            await Work_Form.login_input.set()
-            await message.reply("Пользователь не найден. Введите логин заново")
+        try:
+            user = await database.fetch_one('SELECT * '
+                                            'FROM students '
+                                            'WHERE login = :login ',
+                                            values={'login': data['login']})
+            d = [k for k in user.values()]
+            password = d[3]
+            if data['password']==password:
+                await Work_Form.select_operation.set()
+                await message.reply(f"Добро пожаловать, {user['name']}. Оцените что-нибудь?")
+            else:
+                await Work_Form.login_input.set()
+        except:
+            await message.reply("Пользователь не найден или пароль не верен. Введите логин заново")
 
 
 @dp.message_handler(state=Work_Form.select_student)
