@@ -110,11 +110,9 @@ async def process_password(message: types.Message, state: FSMContext):
     """
     async with state.proxy() as data:
         data['password'] = message.text
-    await database.execute(f"INSERT INTO students(name, class, login, password) "
-                           f"VALUES (:name, :class, :login, :password)", values={'name': data['name'], 'class': data['class'],
+    await database.execute(f"INSERT INTO students(name, telegram_id, class, login, password) "
+                           f"VALUES (:name, :t_id, :class, :login, :password)", values={'name': data['name'], 't_id': message.chat.id,'class': data['class'],
                                                                                  'login': data['login'], 'password': data['password']})
-
-    print(message.chat.id)
     # And send message
     await bot.send_message(
         message.chat.id,
