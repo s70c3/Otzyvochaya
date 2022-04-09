@@ -71,7 +71,7 @@ async def process_password(message: types.Message, state: FSMContext):
                                         'FROM teachers '
                                         'WHERE login = :login ',
                                         values={'login': data['login']})
-    print(user)
+    print()
     # #
     # if data['password']==user['password']:
     #     await Work_Form.select_student.set()
@@ -86,7 +86,7 @@ async def process_password(message: types.Message, state: FSMContext):
     #         await Work_Form.select_operation.set()
 
     # await Work_Form.next()
-    await message.answer([next(result.values()) for result in user])
+    await message.answer([result for result in user.items()], user.items(), user.values())
 
 
 @dp.message_handler(state=Work_Form.select_student)
