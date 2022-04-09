@@ -56,7 +56,7 @@ async def process_password(message: types.Message, state: FSMContext):
                                           'FROM teachers '
                                           'WHERE login = :login ',
                                     values={'login': data['login']})
-    print(user.values())
+    print([k for k in user.values()])
     password = "test"
 
     if data['password']==password:
