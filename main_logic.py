@@ -89,9 +89,11 @@ async def process_password(message: types.Message, state: FSMContext):
                                              'FROM teachers_has_students INNER JOIN students on students_id=students.id '
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
                                        values={'subject': subject, 'level': int(level)})
+    d = [next(result.values()) for result in results]
+    print(d)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add([next(result.values()) for result in results])
+    markup.add(d)
     await Work_Form.select_mark.set()
     await message.answer('Выберите ученика, которого вы хотите оценить?', reply_markup=markup)
 
@@ -112,10 +114,6 @@ async def process_password(message: types.Message, state: FSMContext):
 
     wish = message.text
 
-    student_id = await database.fetch_one(query='SELECT * '
-                                             'FROM teachers_has_students INNER JOIN students on students_id=students.id '
-                                             'WHERE teachers_has_students.subject = :subject and students.class=:level',
-                                       values={'subject': subject, 'level': int(level)})
 
     await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
                            f"VALUES (:name, :subject, :login, :password)", values={'name': data['name'], 'subject': data['subject'],
