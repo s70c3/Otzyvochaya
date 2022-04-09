@@ -84,4 +84,4 @@ async def process_password(message: types.Message, state: FSMContext):
     #         await Work_Form.select_operation.set()
 
     # await Work_Form.next()
-    await message.answer(user, dict(user.values()))
+    await message.answer(dict(user.values()))
