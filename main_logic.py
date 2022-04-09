@@ -16,7 +16,7 @@ from db import database
 @dp.message_handler(text_contains='Как у меня дела?')
 async def cmd_start(message: types.Message):
     results = await database.fetch_all(query='SELECT * '
-                                             'FROM marks_student INNER JOIN students on students_id=id '
+                                             'FROM marks_student INNER JOIN students on students_id=students.id '
                                              'WHERE telegram_id=:t_id;',
                                        values={'t_id': message.chat.id})
     d = [[k for k in result.values()] for result in results]
