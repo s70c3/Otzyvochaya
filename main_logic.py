@@ -56,9 +56,8 @@ async def process_password(message: types.Message, state: FSMContext):
                                           'FROM teachers '
                                           'WHERE login = :login ',
                                     values={'login': data['login']})
-    d = [k for k in user.values()]
-    print(d)
-    password = d[3]
+    print(user.values())
+    password = "test"
 
     if data['password']==password:
         await Work_Form.select_student.set()
