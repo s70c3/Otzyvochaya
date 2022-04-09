@@ -78,8 +78,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
             print('2', d)
             async with state.proxy() as data:
                 data['student_id'] = d[0]
-                data['student_name'] = d[3]
-                data['class'] = d[4]
+                data['student_name'] = d[4]
+                data['class'] = d[5]
                 await Work_Form.select_teacher.set()
         except:
             await Work_Form.login_input.set()
