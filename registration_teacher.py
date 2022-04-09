@@ -54,6 +54,7 @@ async def process_name(message: types.Message, state: FSMContext):
     """
     Process user name
     """
+    print("Got name")
     async with state.proxy() as data:
         data['name'] = message.text
     await Form.next()
