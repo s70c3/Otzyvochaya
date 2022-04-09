@@ -11,6 +11,8 @@ import aiogram.utils.markdown as md
 
 from registration_teacher import *
 from registration_student import *
+from main_logic import *
+
 
 async def on_startup(dispatcher):
     await database.connect()
