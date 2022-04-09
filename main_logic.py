@@ -282,7 +282,7 @@ async def send_feedback(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         print(data['teacher_name'])
     user = await database.fetch_one('SELECT * '
-                                    'FROM teacher '
+                                    'FROM teachers '
                                     'WHERE name = :name ',
                                     values={'name': data['teacher_name']})
     print(user)
