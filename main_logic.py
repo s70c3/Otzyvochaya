@@ -90,7 +90,7 @@ async def select_student(message: types.Message, state: FSMContext):
         data['name'] = message.text
 
     results = await database.fetch_all(query='SELECT * '
-                                             'FROM teachers_has_students INNER JOIN students on students_id=students.id '
+                                             'FROM teachers_has_students INNER JOIN students on students_id=id '
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
                                        values={'subject': subject, 'level': int(level)})
     d = [next(result.values()) for result in results]
@@ -135,8 +135,9 @@ async def process_password(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=Work_Form.send_for_student)
-async def process_password(message: types.Message, state: FSMContext):
+async def send_feedback(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
+        print(data['student_name'])
         user = await database.fetch_one('SELECT * '
                                         'FROM students '
                                         'WHERE login = :login ',
