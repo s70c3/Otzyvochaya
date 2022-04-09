@@ -150,7 +150,7 @@ async def send_feedback(message: types.Message, state: FSMContext):
     await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
                            f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)", values={'teachers_id': data['teachers_id'],
                                                                                                           'students_id':student_id, 'compliment': data['compliment'],
-                                                                                                          'negative': data['negative'],'wish': data['wish'],
+                                                                                                          'negative': data['negative'],'wish': wish,
                                                                                                           })
 
     await Work_Form.send_for_student.set()
