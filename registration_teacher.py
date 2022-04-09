@@ -78,20 +78,6 @@ async def process_name(message: types.Message, state: FSMContext):
 #     return await message.reply("Age gotta be a number.\nHow old are you? (digits only)")
 
 
-@dp.message_handler(state=Form.subject)
-async def process_age(message: types.Message, state: FSMContext):
-    # Update state and data
-    await Form.next()
-    await state.update_data(subject=message.text)
-
-    # Configure ReplyKeyboardMarkup
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Male", "Female")
-    markup.add("Other")
-
-    await message.reply("Какой у вас предмет?", reply_markup=markup)
-
-
 @dp.message_handler(lambda message: message.text not in ["Русский язык", "Математика",  "Иностранный язык", "Физика",
                "Информатика", "Технология", "География", "Биология", "Химия", "Другой"], state=Form.subject)
 async def process_gender_invalid(message: types.Message):
