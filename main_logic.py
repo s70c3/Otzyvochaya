@@ -56,6 +56,7 @@ async def process_password(message: types.Message, state: FSMContext):
                                         'WHERE login = :login ',
                                         values={'login': data['login']})
 
+    # if data['password']==user['password']:
 
     # await Work_Form.next()
-    await message.answer(user.values())
+    await message.answer(user)
