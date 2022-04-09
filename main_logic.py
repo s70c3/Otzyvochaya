@@ -16,18 +16,22 @@ class Work_Form(StatesGroup):
     login_input = State()  # Will be represented in storage as 'Form:name'
     password_input = State()  # Will be represented in storage as 'Form:level'
     select_operation = State()
-    select_compliment = State()
-    input_negative = State()
+    #обратная связь по учителю
+    select_teacher = State()
+    select_compliment_teacher = State()
+    select_negative_teacher = State()
     input_wish_for_teacher = State()
-    select_subject = State()
-    select_subject_mark = State()
-    select_content_mark = State()
+    send_for_student = State()
+   #обратная связь по уроку
     select_student = State()
-    select_compliment = State()
-    select_negative = State()
+    select_compliment_student = State()
+    select_negative_student = State()
     input_wish_for_student = State()
     send_for_student = State()
 
+    select_subject = State()
+    select_subject_mark = State()
+    select_content_mark = State()
 
 @dp.message_handler(commands='login')
 async def cmd_start(message: types.Message):
@@ -73,15 +77,20 @@ async def process_password(message: types.Message, state: FSMContext):
                                             'WHERE login = :login ',
                                             values={'login': data['login']})
             d = [k for k in user.values()]
+            async with state.proxy() as data:
+                data['student_id'] = d[0]
             password = d[3]
             if data['password']==password:
-                await Work_Form.select_operation.set()
-                await message.reply(f"Добро пожаловать, {user['name']}. Оцените что-нибудь?")
+                await Work_Form.select_teacher.set()
+                await message.reply(f"Добро пожаловать, {user['name']}. Оцените что-нибудь? Напишите любое слово, если готовы.")
             else:
                 await Work_Form.login_input.set()
         except:
             await message.reply("Пользователь не найден или пароль не верен. Введите логин заново")
 
+'''
+Выбор для учителя
+'''
 
 @dp.message_handler(state=Work_Form.select_student)
 async def select_student(message: types.Message, state: FSMContext):
@@ -153,5 +162,83 @@ async def send_feedback(message: types.Message, state: FSMContext):
                                                                                                           'negative': data['negative'],'wish': wish,
                                                                                                           })
 
+    await message.answer("Ваша обратная связь записана!")
+    await state.finish()
+
+
+'''  
+Оценка учителя для школьника
+'''
+
+@dp.message_handler(state=Work_Form.select_teacher)
+async def select_student(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['name'] = message.text
+
+    results = await database.fetch_all(query='SELECT * '
+                                             'FROM teachers_has_students INNER JOIN teachers on teachers_id=id '
+                                             'WHERE students_id = :student_id',
+                                       values={'student_id':data['student_id']})
+    d = [[k for k in result.values()] for result in results]
+    names = [k[7] for k in d]
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add(*names)
+    await Work_Form.select_compliment_teacher.set()
+    await message.answer('Выберите учителя, которого вы хотите оценить?', reply_markup=markup)
+
+
+@dp.message_handler(state=Work_Form.select_compliment_teacher)
+async def process_password(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['teacher_name'] = message.text
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("5", "4",  "3", "2", "1")
+    await Work_Form.select_negative_teacher.set()
+    await message.answer("Что хорошего можно сказать учителю?", reply_markup=markup)
+
+
+@dp.message_handler(state=Work_Form.select_negative_teacher)
+async def process_password(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['compliment'] = message.text
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("5", "4",  "3", "2", "1")
+    await Work_Form.input_wish_for_student.set()
+    await message.answer("Что негативного можно сказать учителю?", reply_markup=markup)
+
+
+@dp.message_handler(state=Work_Form.input_wish_for_teacher)
+async def process_password(message: types.Message, state: FSMContext):
+
+    async with state.proxy() as data:
+        data['negative'] = message.text
+
+    markup = types.ReplyKeyboardRemove()
     await Work_Form.send_for_student.set()
-    await message.answer("Напишите готово для отправки")
+    await message.answer("Что вы пожелаете учителю", reply_markup=markup)
+
+
+@dp.message_handler(state=Work_Form.send_for_teacher)
+async def send_feedback(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        print(data['teacher_name'])
+    user = await database.fetch_one('SELECT * '
+                                'FROM teacher '
+                                'WHERE name = :name ',
+                                values={'name': data['teacher_name']})
+    print(user)
+    teacher_id = [k for k in user.values()]
+    student_id = teacher_id[0]
+    wish = message.text
+
+    await database.execute(f"INSERT INTO marks_teacher(teachers_id, students_id, compliment, negative, wish) "
+                           f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)", values={'teachers_id': data['teachers_id'],
+                                                                                                          'students_id':student_id, 'compliment': data['compliment'],
+                                                                                                          'negative': data['negative'],'wish': wish,
+                                                                                                          })
+
+    await message.answer("Ваша обратная связь записана!")
+    await state.finish()
