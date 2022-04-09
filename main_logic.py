@@ -69,7 +69,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=Work_Form.login_input)
-async def process_password(message: types.Message, state: FSMContext):
+async def process_login(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['login'] = message.text
 
@@ -81,15 +81,18 @@ async def process_password(message: types.Message, state: FSMContext):
 async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['password'] = message.text
-
-    user = await database.fetch_one(query='SELECT * '
-                                          'FROM teachers '
-                                          'WHERE login = :login ',
-                                    values={'login': data['login']})
-    d = [k for k in user.values()]
-    password = d[3]
-    async with state.proxy() as data:
-        data['teachers_id']=d[0]
+    try:
+        user = await database.fetch_one(query='SELECT * '
+                                              'FROM teachers '
+                                              'WHERE login = :login ',
+                                        values={'login': data['login']})
+        d = [k for k in user.values()]
+        password = d[3]
+        async with state.proxy() as data:
+            data['teachers_id']=d[0]
+    except:
+        await Work_Form.login_input.set()
+        await message.reply("Пользователь не найден или пароль не верен. Введите логин заново")
 
     if data['password']==password:
         await Work_Form.select_student.set()
@@ -110,6 +113,7 @@ async def process_password(message: types.Message, state: FSMContext):
             else:
                 await Work_Form.login_input.set()
         except:
+            await Work_Form.login_input.set()
             await message.reply("Пользователь не найден или пароль не верен. Введите логин заново")
 
 '''
