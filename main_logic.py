@@ -293,7 +293,7 @@ async def send_feedback(message: types.Message, state: FSMContext):
     await database.execute(f"INSERT INTO marks_teacher(teachers_id, students_id, compliment, negative, wish) "
                            f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)",
                            values={'teachers_id':teacher_id,
-                                   'students_id': data['students_id'], 'compliment': data['compliment'],
+                                   'students_id': data['student_id'], 'compliment': data['compliment'],
                                    'negative': data['negative'], 'wish': wish,
                                    })
 
