@@ -95,7 +95,7 @@ async def process_subject(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=Form.login)
-async def process_name(message: types.Message, state: FSMContext):
+async def process_login(message: types.Message, state: FSMContext):
     """
     Process user name
     """
@@ -107,7 +107,7 @@ async def process_name(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=Form.password)
-async def process_name(message: types.Message, state: FSMContext):
+async def process_password(message: types.Message, state: FSMContext):
     """
     Process user name
     """
