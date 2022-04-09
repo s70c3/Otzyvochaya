@@ -82,8 +82,8 @@ async def process_password(message: types.Message, state: FSMContext):
     level, subject = message.text.split()[:2]
 
     results = await database.fetch_one(query='SELECT * '
-                                             'FROM teacher_has_students INNER JOIN students on students_id=students.id '
-                                             'WHERE teacher_has_students.subject = :subject and students.class=:level',
+                                             'FROM teachers_has_students INNER JOIN students on students_id=students.id '
+                                             'WHERE teachers_has_students.subject = :subject and students.class=:level',
                                        values={'subject': subject, 'level': level})
 
     await message.answer([next(result.values()) for result in results])
