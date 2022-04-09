@@ -11,6 +11,17 @@ from config import dp, bot
 from db import database
 
 
+
+
+@dp.message_handler(text_contains='Как у меня дела?')
+async def cmd_start(message: types.Message):
+    results = await database.fetch_all(query='SELECT * '
+                                             'FROM marks_student INNER JOIN students on students_id=id '
+                                             'WHERE telegram_id=:t_id;',
+                                       values={'t_id': message.chat.id})
+    d = [[k for k in result.values()] for result in results]
+    await message.reply(str(d))
+
 # States
 class Work_Form(StatesGroup):
     login_input = State()  # Will be represented in storage as 'Form:name'
@@ -33,7 +44,7 @@ class Work_Form(StatesGroup):
     select_subject_mark = State()
     select_content_mark = State()
 
-@dp.message_handler(commands='login')
+@dp.message_handler(commands='start')
 async def cmd_start(message: types.Message, state: FSMContext):
     """
     Conversation's entry point
