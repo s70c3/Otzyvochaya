@@ -34,14 +34,38 @@ class Work_Form(StatesGroup):
     select_content_mark = State()
 
 @dp.message_handler(commands='login')
-async def cmd_start(message: types.Message):
+async def cmd_start(message: types.Message, state: FSMContext):
     """
     Conversation's entry point
     """
     # Set state
-    await Work_Form.login_input.set()
 
-    await message.reply("Введите ваш логин.")
+    try:
+        user = await database.fetch_one(query='SELECT * '
+                                              'FROM teachers '
+                                              'WHERE telegram_id = :t_id ',
+                                        values={'t_id': message.chat.id})
+        if user.values():
+            d = [k for k in user.values()]
+            async with state.proxy() as data:
+                data['teachers_id'] = d[0]
+                data['name'] = d[3]
+                data['subject'] = d[4]
+                await Work_Form.select_student.set()
+        else:
+            user = await database.fetch_one(query='SELECT * '
+                                                  'FROM students '
+                                                  'WHERE telegram_id = :t_id ',
+                                            values={'t_id': message.chat.id})
+            d = [k for k in user.values()]
+            async with state.proxy() as data:
+                data['student_id'] = d[0]
+                data['name'] = d[3]
+                data['class'] = d[4]
+                Work_Form.select_teacher.set()
+    except:
+        await Work_Form.login_input.set()
+        await message.reply("Введите ваш логин.")
 
 
 @dp.message_handler(state=Work_Form.login_input)
