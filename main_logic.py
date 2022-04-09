@@ -143,12 +143,13 @@ async def send_feedback(message: types.Message, state: FSMContext):
                                 'WHERE name = :name ',
                                 values={'name': data['student_name']})
     print(user)
-    # data['student_id']=[k for k in user.values()][0]
+    student_id = [k for k in user.values()]
+    student_id = student_id[0]
     wish = message.text
 
     await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
                            f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)", values={'teachers_id': data['teachers_id'],
-                                                                                                          'student_id': data['student_id'], 'compliment': data['compliment'],
+                                                                                                          'students_id':student_id, 'compliment': data['compliment'],
                                                                                                           'negative': data['negative'],'wish': data['wish'],
                                                                                                           })
 
