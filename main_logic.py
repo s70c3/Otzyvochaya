@@ -138,10 +138,12 @@ async def process_password(message: types.Message, state: FSMContext):
 async def send_feedback(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         print(data['student_name'])
-        user = await database.fetch_one('SELECT * '
-                                        'FROM students '
-                                        'WHERE login = :login ',
-                                        values={'login': data['student_name']})
+    user = await database.fetch_one('SELECT * '
+                                    'FROM students '
+                                    'WHERE name = :name ',
+                                    values={'name': data['student_name']})
+    print(user)
+    async with state.proxy() as data:
         data['student_id']=[k for k in user.values()][0]
     wish = message.text
 
