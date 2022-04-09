@@ -14,3 +14,4 @@ WEBAPP_HOST = '0.0.0.0'
 WEBAPP_PORT = os.getenv('PORT', default=8000)
 
 DB_URL = os.getenv('DATABASE_URL')
+print(DB_URL)
