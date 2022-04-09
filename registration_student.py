@@ -74,7 +74,7 @@ async def process_name(message: types.Message, state: FSMContext):
 #     return await message.reply("Age gotta be a number.\nHow old are you? (digits only)")
 
 
-@dp.message_handler(lambda message: not message.text.isdigit(), state=Form_Student.level)
+@dp.message_handler(lambda message: not message.text.isdigit(), state=Form_Student.level_student)
 async def process_class_invalid(message: types.Message):
     """
     In this example gender has to be one of: Male, Female, Other.
