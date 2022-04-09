@@ -51,11 +51,11 @@ async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['password'] = message.text
 
-    user = await database.fetch_all('SELECT * '
+    user = await database.fetch_one('SELECT * '
                                         'FROM teachers '
                                         'WHERE login = :login ',
                                         values={'login': data['login']})
 
 
     # await Work_Form.next()
-    await message.answer([next(result.values()) for result in user])
+    await message.answer(user.values())
