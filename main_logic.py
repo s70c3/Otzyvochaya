@@ -21,7 +21,7 @@ class Work_Form(StatesGroup):
     select_compliment_teacher = State()
     select_negative_teacher = State()
     input_wish_for_teacher = State()
-    send_for_student = State()
+    send_for_teacher = State()
    #обратная связь по уроку
     select_student = State()
     select_compliment_student = State()
