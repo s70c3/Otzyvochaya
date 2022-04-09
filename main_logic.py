@@ -358,7 +358,7 @@ async def process_negative(message: types.Message, state: FSMContext):
 @dp.message_handler(state=Work_Form.wish_subject)
 async def process_wish(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['negative'] = message.text
+        data['content'] = message.text
 
     markup = types.ReplyKeyboardRemove()
     await Work_Form.send_for_student.set()
@@ -380,9 +380,9 @@ async def send_feedback(message: types.Message, state: FSMContext):
 
     await database.execute(f"INSERT INTO marks_subjects(teachers_id, students_id, subject, interes, content) "
                            f"VALUES (:teachers_id, :students_id, :subject, :interes, :content)",
-                           values={'teachers_id': data['teachers_id'],
-                                   'students_id': student_id, 'compliment': data['compliment'],
-                                   'negative': data['negative'], 'content': content,
+                           values={'teachers_id': teacher_id,
+                                   'students_id': data['student_id'], 'subject': data['subject'],
+                                   'interes': data['interes'], 'content': data['content'],
                                    })
 
     await message.answer("Ваша обратная связь записана!")

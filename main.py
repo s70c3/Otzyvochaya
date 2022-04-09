@@ -17,7 +17,7 @@ import asyncio
 import aioschedule
 
 async def scheduler():
-    aioschedule.every().day.at("03:25").do(broadcaster())
+    aioschedule.every().day.at("03:25").do(broadcaster)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
