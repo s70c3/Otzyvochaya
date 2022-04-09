@@ -54,15 +54,15 @@ async def process_name(message: types.Message, state: FSMContext):
     """
     Process user name
     """
+    async with state.proxy() as data:
+        data['name'] = message.text
+    await Form.next()
 
     # Configure ReplyKeyboardMarkup
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("Русский язык", "Математика",  "Иностранный язык", "Физика",
                "Информатика", "Технология", "География", "Биология", "Химия")
     markup.add("Другой")
-    await Form.next()
-    await state.update_data(name=message.text)
-
 
     await message.reply("Какой предмет вы преподаете?", reply_markup=markup)
 
