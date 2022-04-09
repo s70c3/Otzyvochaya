@@ -37,12 +37,25 @@ async def cmd_start(message: types.Message):
 
     await message.reply("Введите ваш логин.")
 
-@dp.message_handler(state=Work_Form.password_input)
+@dp.message_handler(state=Work_Form.login_input)
 async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['login'] = int(message.text)
+        data['login'] = message.text
 
     await Work_Form.next()
     await message.reply("Введите пароль")
 
 
+@dp.message_handler(state=Work_Form.password_input)
+async def process_password(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['password'] = message.text
+
+    users = await database.fetch_all('SELECT * '
+                                        'FROM teachers '
+                                        'WHERE login = :login ',
+                                        values={'login': data['login']})
+
+
+    # await Work_Form.next()
+    await message.reply(users)
