@@ -82,14 +82,11 @@ async def process_class_invalid(message: types.Message):
     return await message.reply("Вы ввели класс не цифрой. Введите другой.")
 
 
-
 @dp.message_handler(state=Form.level)
 async def process_subject(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['class'] = int(message.text)
 
-        # Remove keyboard
-        markup = types.ReplyKeyboardRemove()
     await Form.next()
     await message.reply("Введите логин.")
 

@@ -18,6 +18,8 @@ import logging
 class Form(StatesGroup):
     name = State()  # Will be represented in storage as 'Form:name'
     subject = State()  # Will be represented in storage as 'Form:subject'
+    login = State()
+    password = State()
 
 
 @dp.message_handler(commands='register_teacher')
@@ -54,7 +56,6 @@ async def process_name(message: types.Message, state: FSMContext):
     """
     Process user name
     """
-    print("Got name")
     async with state.proxy() as data:
         data['name'] = message.text
     await Form.next()
@@ -87,28 +88,48 @@ async def process_gender_invalid(message: types.Message):
     return await message.reply("Неизвестный предмет. Введите другой.")
 
 
-
 @dp.message_handler(state=Form.subject)
 async def process_subject(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['subject'] = message.text
 
-        # Remove keyboard
-        markup = types.ReplyKeyboardRemove()
-        await database.execute(f"INSERT INTO teachers(name, subject) "
-                               f"VALUES (:name, :subject)", values={'name': data['name'], 'subject': data['subject']})
+    await Form.next()
+    await message.reply("Введите логин.")
 
-        # And send message
-        await bot.send_message(
-            message.chat.id,
-            md.text(
-                md.text('Отлично, вы зарегистрированы, ', md.bold(data['name'])),
-                md.text('Ваш предмет', md.code(data['subject'])),
-                sep='\n',
-            ),
-            reply_markup=markup,
-            parse_mode=ParseMode.MARKDOWN,
-        )
 
-    # Finish conversation
+@dp.message_handler(state=Form.login)
+async def process_login(message: types.Message, state: FSMContext):
+    """
+    Process user name
+    """
+    print("Got name")
+    async with state.proxy() as data:
+        data['login'] = message.text
+    await Form.next()
+    await message.reply("Введите ваш пароль.")
+
+
+@dp.message_handler(state=Form.password)
+async def process_password(message: types.Message, state: FSMContext):
+    """
+    Process user name
+    """
+    async with state.proxy() as data:
+        data['password'] = message.text
+
+    await database.execute(f"INSERT INTO teachers(name, subject, login, password) "
+                           f"VALUES (:name, :subject, :login, :password)", values={'name': data['name'], 'subject': data['subject'],
+                                                                                 'login': data['login'], 'password': data['password']})
+
+    # And send message
+    await bot.send_message(
+        message.chat.id,
+        md.text(
+            md.text('Отлично, вы зарегистрированы, ', md.bold(data['name'])),
+            md.text('Ваш предмет', md.code(data['subject'])),
+            sep='\n',
+        ),
+        parse_mode=ParseMode.MARKDOWN,
+    )
+# Finish conversation
     await state.finish()
