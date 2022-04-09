@@ -3,7 +3,9 @@ from aiogram import types
 from aiogram.utils.executor import start_webhook
 from config import bot, dp, WEBHOOK_URL, WEBHOOK_PATH, WEBAPP_HOST, WEBAPP_PORT
 from db import database
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
+import aiogram.utils.markdown as md
 
 async def on_startup(dispatcher):
     await database.connect()
@@ -16,7 +18,7 @@ async def on_shutdown(dispatcher):
 
 
 async def save(user_id, text):
-    await database.execute(f"INSERT INTO messages(telegram_id, text) "
+    await database.execute(f"INSERT INTO teachers(telegram_id, text) "
                            f"VALUES (:telegram_id, :text)", values={'telegram_id': user_id, 'text': text})
 
 
