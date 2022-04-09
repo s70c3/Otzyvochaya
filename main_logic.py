@@ -24,6 +24,7 @@ async def cmd_start(message: types.Message):
     await message.reply(str(d))
 
 
+
 # States
 class Work_Form(StatesGroup):
     login_input = State()  # Will be represented in storage as 'Form:name'
@@ -41,6 +42,7 @@ class Work_Form(StatesGroup):
     select_negative_student = State()
     input_wish_for_student = State()
     send_for_student = State()
+
 
     select_subject = State()
     select_subject_mark = State()

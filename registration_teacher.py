@@ -21,6 +21,8 @@ class Form(StatesGroup):
     login = State()
     password = State()
 
+    add_student = State()
+    enter_name = State()
 
 @dp.message_handler(commands='register_teacher')
 async def cmd_start(message: types.Message):
@@ -133,3 +135,34 @@ async def process_password(message: types.Message, state: FSMContext):
     )
 # Finish conversation
     await state.finish()
+
+@dp.message_handler(commands='add_student')
+async def cmd_start_adding(message: types.Message):
+    """
+    Conversation's entry point
+    """
+    # Set state
+    await Form.add_student.set()
+    await message.reply("Введите ФИО ученика и предмет через пробел")
+
+
+@dp.message_handler(state=Form.add_student)
+async def cmd_add(message: types.Message, state: FSMContext):
+    """
+    Conversation's entry point
+    """
+    name, subject = message.text.split()[:2]
+    results = await database.fetch_all(query='SELECT * '
+                                             'FROM students where name=:name;', values={'name':name})
+    d = [[k for k in result.values()] for result in results]
+    if len(d)>0:
+        d=d[0]
+    await database.execute(f"INSERT INTO teachers_has_students(teachers_id, students_id, subject,) "
+                           f"VALUES (:t_id,:s_id,  :subject)",
+                           values={'t_id': 1, 's_id': d[0], 'subject': subject})
+
+    # Set state
+    await message.reply("Связь добавлена.")
+    await state.finish()
+
+
