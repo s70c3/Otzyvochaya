@@ -93,11 +93,11 @@ async def select_student(message: types.Message, state: FSMContext):
                                              'FROM teachers_has_students INNER JOIN students on students_id=id '
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
                                        values={'subject': subject, 'level': int(level)})
-    d = [next(result.values()) for result in results]
+    d = [[k for k in result.values()] for result in results]
     print(d)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add(d)
+    markup.add('1', '2')
     await Work_Form.select_compliment.set()
     await message.answer('Выберите ученика, которого вы хотите оценить?', reply_markup=markup)
 
