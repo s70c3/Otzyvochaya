@@ -138,12 +138,12 @@ async def process_password(message: types.Message, state: FSMContext):
 async def send_feedback(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         print(data['student_name'])
-        user = await database.fetch_one('SELECT * '
-                                    'FROM students '
-                                    'WHERE name = :name ',
-                                    values={'name': data['student_name']})
-        print(user)
-        data['student_id']=[k for k in user.values()][0]
+    user = await database.fetch_one('SELECT * '
+                                'FROM students '
+                                'WHERE name = :name ',
+                                values={'name': data['student_name']})
+    print(user)
+    # data['student_id']=[k for k in user.values()][0]
     wish = message.text
 
     await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
