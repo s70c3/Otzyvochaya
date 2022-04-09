@@ -8,6 +8,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 import aiogram.utils.markdown as md
 
 from registration_teacher import *
+from registration_student import *
 
 async def on_startup(dispatcher):
     await database.connect()
