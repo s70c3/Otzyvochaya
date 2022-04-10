@@ -18,11 +18,13 @@ async def cmd_start(message: types.Message):
     await message.reply(
         md.text(
             md.text('Команды:'),
-            md.text('Для оценки:', md.bold('/start')),
+            md.text('Для оценки:', md.bold('/rate')),
             md.text('Для того чтобы узнать обратную связь:' ),
             md.text( md.bold('Как у меня дела?'), 'для ученика'),
             md.text(md.bold('Как меня оценивают?'), 'для учителя'),
             md.text('Оценка предмета придёт к вам по расписанию.'),
+            md.text('Тестовые данные: логин и пароль учителя petr, petr'),
+            md.text('Тестовые данные: логин и пароль ученика ivan, ivan'),
             sep='\n',
         ),
     )
@@ -123,8 +125,10 @@ async def cmd_start(message: types.Message, state: FSMContext):
             data['teacher_name'] = d[3]
             data['subject'] = d[4]
             await Work_Form.select_student.set()
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+            markup.add('Информатика 9')
             await message.reply(
-                f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.")
+                f"Добро пожаловать, {user['name']}. Оцените учеников? Введите класс и предмет через пробел.", reply_markup=markup)
     except:
         try:
             user = await database.fetch_one(query='SELECT * '
@@ -249,7 +253,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['negative'] = message.text
 
     await Work_Form.send_for_student.set()
-    await message.answer("Что вы пожелаете ученику?")
+    await message.answer("Что вы пожелаете ученику?", reply_markup=types.ReplyKeyboardRemove())
 
 
 @dp.message_handler(state=Work_Form.send_for_student)
