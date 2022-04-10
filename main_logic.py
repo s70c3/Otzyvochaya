@@ -227,7 +227,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['student_name'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Отличная работа", "Качественная работа", "Неплохая работа", "Средняя работа", "Не работал")
+    markup.add("Лучший", "Верное направление", "Добрый", "Расстроился", "Ничего")
     await Work_Form.select_negative_student.set()
     await message.answer("Что хорошего можно сказать о работе на уроке?", reply_markup=markup)
 
@@ -238,7 +238,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['compliment'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Лучший", "Верное направление", "Добрый", "Расстроился", "Ничего")
+    markup.add("Многовато ошибочек", "Плохое поведение", "Меньше гаджетов", "Агрессивный", "Всё хорошо")
     await Work_Form.input_wish_for_student.set()
     await message.answer("Что плохого можно сказать о работе на уроке?", reply_markup=markup)
 
@@ -248,10 +248,8 @@ async def process_password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['negative'] = message.text
 
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Многовато ошибочек", "Плохое поведение", "Меньше гаджетов", "Агрессивный", "Всё хорошо")
     await Work_Form.send_for_student.set()
-    await message.answer("Что вы пожелаете ученику?", reply_markup=markup)
+    await message.answer("Что вы пожелаете ученику?")
 
 
 @dp.message_handler(state=Work_Form.send_for_student)
