@@ -212,7 +212,7 @@ async def select_student(message: types.Message, state: FSMContext):
                                        values={'subject': subject, 'level': int(level)})
     d = [[k for k in result.values()] for result in results]
     print("students", d)
-    names = [k[6] for k in d]
+    names = [k[7] for k in d]
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add(*names)
