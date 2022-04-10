@@ -20,8 +20,24 @@ async def cmd_start(message: types.Message):
                                              'FROM marks_student INNER JOIN students on students_id=students.id '
                                              'WHERE telegram_id=:t_id;',
                                        values={'t_id': message.chat.id})
+
     d = [[k for k in result.values()] for result in results]
-    await message.reply(str(d))
+    compliments = []
+    negative = []
+    wish = []
+    for k in d:
+        compliments.append(k[3])
+        negative.append(k[4])
+        wish.append(k[5])
+
+    await message.reply(
+        md.text(
+            md.text('Комплименты вам, ', md.bold("\n".join(compliments))),
+            md.text('Ваши недочёты',  md.bold("\n".join(negative))),
+            md.text('Пожелания вам', md.bold("\n".join(wish))),
+            sep='\n',
+        ),
+    )
 
 
 
@@ -184,7 +200,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['compliment'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("5", "4", "3", "2", "1")
+    markup.add("Лучший", "Верное направление", "Добрый", "Расстроился")
     await Work_Form.input_wish_for_student.set()
     await message.answer("Что плохого можно сказать о работе на уроке?", reply_markup=markup)
 
@@ -195,7 +211,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['negative'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("5", "4", "3", "2", "1")
+    markup.add("Многовато ошибочек", "Плохое поведение", "Меньше гаджетов", "Агрессивный")
     await Work_Form.send_for_student.set()
     await message.answer("Что вы пожелаете ученику?", reply_markup=markup)
 
@@ -253,7 +269,7 @@ async def process_compliment(message: types.Message, state: FSMContext):
         data['teacher_name'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("5", "4", "3", "2", "1")
+    markup.add("Любимый учитель", "Лучший", "Понятное объяснение")
     await Work_Form.select_negative_teacher.set()
     await message.answer("Что хорошего можно сказать учителю?", reply_markup=markup)
 
@@ -264,9 +280,9 @@ async def process_negative(message: types.Message, state: FSMContext):
         data['compliment'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("5", "4", "3", "2", "1")
+    markup.add("Большая загрузка", "Непонятно")
     await Work_Form.input_wish_for_teacher.set()
-    await message.answer("Что негативного можно сказать учителю?", reply_markup=markup)
+    await message.answer("Какие недочёты есть у учителя?", reply_markup=markup)
 
 
 @dp.message_handler(state=Work_Form.input_wish_for_teacher)
