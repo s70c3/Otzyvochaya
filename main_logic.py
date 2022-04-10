@@ -39,6 +39,29 @@ async def cmd_start(message: types.Message):
         ),
     )
 
+@dp.message_handler(text_contains='Как меня оценивают?')
+async def cmd_start(message: types.Message):
+    results = await database.fetch_all(query='SELECT * FROM marks_teacher INNER JOIN teachers on teachers_id=id '
+                                             'WHERE telegram_id=:t_id;',
+                                       values={'t_id': message.chat.id})
+
+    d = [[k for k in result.values()] for result in results]
+    compliments = []
+    negative = []
+    wish = []
+    for k in d:
+        compliments.append(k[3])
+        negative.append(k[4])
+        wish.append(k[5])
+
+    await message.reply(
+        md.text(
+            md.text('Комплименты вам, ', md.bold("\n".join(compliments))),
+            md.text('Ваши недочёты',  md.bold("\n".join(negative))),
+            md.text('Пожелания вам', md.bold("\n".join(wish))),
+            sep='\n',
+        ),
+    )
 
 
 # States
