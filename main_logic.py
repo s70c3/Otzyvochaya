@@ -13,7 +13,7 @@ from aiogram.utils import executor
 from config import dp, bot
 from db import database
 
-@dp.message_handler(commands='help')
+@dp.message_handler(commands='start')
 async def cmd_start(message: types.Message):
     await message.reply(
         md.text(
@@ -22,6 +22,7 @@ async def cmd_start(message: types.Message):
             md.text('Для того чтобы узнать обратную связь:' ),
             md.text( md.bold('Как у меня дела?'), 'для ученика'),
             md.text(md.bold('Как меня оценивают?'), 'для учителя'),
+            md.text('Оценка предмета придёт к вам по расписанию.'),
             sep='\n',
         ),
     )
@@ -103,7 +104,7 @@ class Work_Form(StatesGroup):
     wish_subject = State()
 
 
-@dp.message_handler(commands='start')
+@dp.message_handler(commands='rate')
 async def cmd_start(message: types.Message, state: FSMContext):
     """
     Conversation's entry point
