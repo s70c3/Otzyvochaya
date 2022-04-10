@@ -205,7 +205,7 @@ async def select_student(message: types.Message, state: FSMContext):
     subject, level = message.text.split()[:2]
     async with state.proxy() as data:
         data['name'] = message.text
-
+    print(data[''])
     results = await database.fetch_all(query='SELECT * '
                                              'FROM teachers_has_students INNER JOIN students on students_id=id '
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
@@ -226,7 +226,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['student_name'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("5", "4", "3", "2", "1")
+    markup.add("Отличная работа", "Качественная работа", "Неплохая работа", "Средняя работа", "Не работал")
     await Work_Form.select_negative_student.set()
     await message.answer("Что хорошего можно сказать о работе на уроке?", reply_markup=markup)
 
@@ -237,7 +237,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['compliment'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Лучший", "Верное направление", "Добрый", "Расстроился")
+    markup.add("Лучший", "Верное направление", "Добрый", "Расстроился", "Ничего")
     await Work_Form.input_wish_for_student.set()
     await message.answer("Что плохого можно сказать о работе на уроке?", reply_markup=markup)
 
@@ -248,7 +248,7 @@ async def process_password(message: types.Message, state: FSMContext):
         data['negative'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Многовато ошибочек", "Плохое поведение", "Меньше гаджетов", "Агрессивный")
+    markup.add("Многовато ошибочек", "Плохое поведение", "Меньше гаджетов", "Агрессивный", "Всё хорошо")
     await Work_Form.send_for_student.set()
     await message.answer("Что вы пожелаете ученику?", reply_markup=markup)
 
