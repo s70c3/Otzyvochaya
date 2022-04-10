@@ -211,6 +211,7 @@ async def select_student(message: types.Message, state: FSMContext):
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
                                        values={'subject': subject, 'level': int(level)})
     d = [[k for k in result.values()] for result in results]
+    print("students", d)
     names = [k[6] for k in d]
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
@@ -276,7 +277,7 @@ async def send_feedback(message: types.Message, state: FSMContext):
         await message.answer("Ваша обратная связь записана!")
         await state.finish()
     except:
-        await message.answer("Произошла.")
+        await message.answer("Произошла ошибка.")
 
 
 '''  
