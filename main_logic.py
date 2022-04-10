@@ -205,7 +205,7 @@ async def select_student(message: types.Message, state: FSMContext):
     subject, level = message.text.split()[:2]
     async with state.proxy() as data:
         data['name'] = message.text
-    print(data[''])
+        print(subject, level)
     results = await database.fetch_all(query='SELECT * '
                                              'FROM teachers_has_students INNER JOIN students on students_id=id '
                                              'WHERE teachers_has_students.subject = :subject and students.class=:level',
