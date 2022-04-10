@@ -277,7 +277,18 @@ async def send_feedback(message: types.Message, state: FSMContext):
                                        'negative': data['negative'], 'wish': wish,
                                        })
 
-        await message.answer("Ваша обратная связь записана!")
+        await message.answer(md.text(
+            md.text("Ваша обратная связь записана!"),
+            md.text('Команды:'),
+            md.text('Для оценки:', md.bold('/rate')),
+            md.text('Для того чтобы узнать обратную связь:'),
+            md.text(md.bold('Как у меня дела?'), 'для ученика'),
+            md.text(md.bold('Как меня оценивают?'), 'для учителя'),
+            md.text('Оценка предмета придёт к вам по расписанию.'),
+            md.text('Тестовые данные: логин и пароль учителя petr, petr'),
+            md.text('Тестовые данные: логин и пароль ученика ivan, ivan'),
+            sep='\n',
+        ),)
         await state.finish()
     except:
         await message.answer("Произошла ошибка.")
@@ -446,5 +457,18 @@ async def send_feedback(message: types.Message, state: FSMContext):
                                    'interes': data['interes'], 'content': data['content'],
                                    })
 
-    await message.answer("Ваша обратная связь записана!")
+    await message.reply(
+        md.text(
+            md.text("Ваша обратная связь записана!"),
+            md.text('Команды:'),
+            md.text('Для оценки:', md.bold('/rate')),
+            md.text('Для того чтобы узнать обратную связь:'),
+            md.text(md.bold('Как у меня дела?'), 'для ученика'),
+            md.text(md.bold('Как меня оценивают?'), 'для учителя'),
+            md.text('Оценка предмета придёт к вам по расписанию.'),
+            md.text('Тестовые данные: логин и пароль учителя petr, petr'),
+            md.text('Тестовые данные: логин и пароль ученика ivan, ivan'),
+            sep='\n',
+        ),
+    )
     await state.finish()
