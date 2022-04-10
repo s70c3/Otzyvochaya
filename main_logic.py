@@ -69,9 +69,9 @@ async def cmd_start(message: types.Message):
 
     await message.reply(
         md.text(
-            md.text('Комплименты вам, ', md.bold("\n".join(compliments))),
-            md.text('Ваши недочёты',  md.bold("\n".join(negative))),
-            md.text('Пожелания вам', md.bold("\n".join(wish))),
+            md.text('Комплименты вам: ', md.bold("\n".join(compliments))),
+            md.text('Ваши недочёты:',  md.bold("\n".join(negative))),
+            md.text('Пожелания вам:', md.bold("\n".join(wish))),
             sep='\n',
         ),
     )
@@ -256,24 +256,27 @@ async def process_password(message: types.Message, state: FSMContext):
 async def send_feedback(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         print(data['student_name'])
-    user = await database.fetch_one('SELECT * '
-                                    'FROM students '
-                                    'WHERE name = :name ',
-                                    values={'name': data['student_name']})
-    print(user)
-    student_id = [k for k in user.values()]
-    student_id = student_id[0]
-    wish = message.text
+    try:
+        user = await database.fetch_one('SELECT * '
+                                        'FROM students '
+                                        'WHERE name = :name ',
+                                        values={'name': data['student_name']})
+        print(user)
+        student_id = [k for k in user.values()]
+        student_id = student_id[0]
+        wish = message.text
 
-    await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
-                           f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)",
-                           values={'teachers_id': data['teachers_id'],
-                                   'students_id': student_id, 'compliment': data['compliment'],
-                                   'negative': data['negative'], 'wish': wish,
-                                   })
+        await database.execute(f"INSERT INTO marks_student(teachers_id, students_id, compliment, negative, wish) "
+                               f"VALUES (:teachers_id, :students_id, :compliment, :negative, :wish)",
+                               values={'teachers_id': data['teachers_id'],
+                                       'students_id': student_id, 'compliment': data['compliment'],
+                                       'negative': data['negative'], 'wish': wish,
+                                       })
 
-    await message.answer("Ваша обратная связь записана!")
-    await state.finish()
+        await message.answer("Ваша обратная связь записана!")
+        await state.finish()
+    except:
+        await message.answer("Произошла.")
 
 
 '''  
