@@ -13,6 +13,19 @@ from aiogram.utils import executor
 from config import dp, bot
 from db import database
 
+@dp.message_handler(commands='help')
+async def cmd_start(message: types.Message):
+    await message.reply(
+        md.text(
+            md.text('Команды:'),
+            md.text('Для оценки:', md.bold('/start')),
+            md.text('Для того чтобы узнать обратную связь:' ),
+            md.text( md.bold('Как у меня дела?'), 'для ученика'),
+            md.text(md.bold('Как меня оценивают?'), 'для учителя'),
+            sep='\n',
+        ),
+    )
+
 
 @dp.message_handler(text_contains='Как у меня дела?')
 async def cmd_start(message: types.Message):
