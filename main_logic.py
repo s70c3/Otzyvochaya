@@ -54,7 +54,7 @@ async def cmd_start(message: types.Message):
 
 @dp.message_handler(text_contains='Как меня оценивают?')
 async def cmd_start(message: types.Message):
-    results = await database.fetch_all(query='SELECT * FROM marks_teacher INNER JOIN teachers on teachers_id=id '
+    results = await database.fetch_all(query='SELECT * FROM marks_teacher INNER JOIN teachers on teachers_id=teachers.id '
                                              'WHERE telegram_id=:t_id;',
                                        values={'t_id': message.chat.id})
 
